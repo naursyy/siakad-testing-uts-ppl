@@ -1,0 +1,71 @@
+# ========================
+# Maven / Java
+# ========================
+target/
+*.class
+*.jar
+*.war
+*.ear
+
+!.mvn/wrapper/maven-wrapper.jar
+
+# Optional: include build folders inside src if needed
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+# ========================
+# IntelliJ IDEA
+# ========================
+.idea/
+*.iws
+*.iml
+*.ipr
+# Optional: workspace & local settings
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/dictionaries/
+.idea/shelf/
+
+# ========================
+# Eclipse
+# ========================
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings/
+.springBeans
+.sts4-cache
+
+# ========================
+# NetBeans
+# ========================
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+# ========================
+# VS Code
+# ========================
+.vscode/
+
+# ========================
+# OS Files
+# ========================
+# Mac OS
+.DS_Store
+# Windows
+Thumbs.db
+
+# ========================
+# Logs / temporary
+# ========================
+*.log
+*.tmp
+*.bak
+*.swp
