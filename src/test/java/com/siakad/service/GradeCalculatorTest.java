@@ -130,12 +130,14 @@ class GradeCalculatorTest {
         assertEquals(expectedGPA, gpa, 0.001);
     }
 
+    // ==================== EXCEPTION HANDLING TESTS - CALCULATE GPA ====================
+
     @Test
-    @DisplayName("Test calculateGPA harus throw exception jika grade point invalid (< 0.0)")
+    @DisplayName("Test calculateGPA harus throw exception jika grade point invalid (< 0.0) - BOUNDARY: -0.1")
     void testCalculateGPA_InvalidGradePoint_LessThanZero() {
         List<CourseGrade> grades = Arrays.asList(
                 new CourseGrade("CS101", 3, 4.0),
-                new CourseGrade("CS102", 3, -0.5) // Nilai invalid
+                new CourseGrade("CS102", 3, -0.5) // Nilai invalid - BOUNDARY TEST
         );
 
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
@@ -146,10 +148,10 @@ class GradeCalculatorTest {
     }
 
     @Test
-    @DisplayName("Test calculateGPA harus throw exception jika grade point invalid (> 4.0)")
+    @DisplayName("Test calculateGPA harus throw exception jika grade point invalid (> 4.0) - BOUNDARY: 4.1")
     void testCalculateGPA_InvalidGradePoint_GreaterThanFour() {
         List<CourseGrade> grades = Arrays.asList(
-                new CourseGrade("CS101", 3, 4.1) // Nilai invalid
+                new CourseGrade("CS101", 3, 4.1) // Nilai invalid - BOUNDARY TEST
         );
 
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
@@ -159,21 +161,23 @@ class GradeCalculatorTest {
         assertTrue(exception.getMessage().contains("Invalid grade point: 4.1"));
     }
 
+    // ==================== BOUNDARY TESTING - CALCULATE GPA ====================
+
     @Test
-    @DisplayName("Test calculateGPA dengan grade point 0.0 (valid boundary)")
+    @DisplayName("Test calculateGPA dengan grade point 0.0 (valid boundary - LOWER BOUND)")
     void testCalculateGPA_GradePoint_Zero_Valid() {
         List<CourseGrade> grades = Arrays.asList(
-                new CourseGrade("CS101", 3, 0.0)
+                new CourseGrade("CS101", 3, 0.0) // VALID BOUNDARY: 0.0
         );
         double gpa = gradeCalculator.calculateGPA(grades);
         assertEquals(0.0, gpa, 0.001);
     }
 
     @Test
-    @DisplayName("Test calculateGPA dengan grade point 4.0 (valid boundary)")
+    @DisplayName("Test calculateGPA dengan grade point 4.0 (valid boundary - UPPER BOUND)")
     void testCalculateGPA_GradePoint_Four_Valid() {
         List<CourseGrade> grades = Arrays.asList(
-                new CourseGrade("CS101", 3, 4.0)
+                new CourseGrade("CS101", 3, 4.0) // VALID BOUNDARY: 4.0
         );
         double gpa = gradeCalculator.calculateGPA(grades);
         assertEquals(4.0, gpa, 0.001);
@@ -206,12 +210,12 @@ class GradeCalculatorTest {
     }
 
     @Test
-    @DisplayName("Test calculateGPA dengan totalCredits = 0 (edge case)")
+    @DisplayName("Test calculateGPA dengan totalCredits = 0 (edge case - BOUNDARY)")
     void testCalculateGPA_TotalCreditsZero() {
         // Skenario: List tidak kosong tapi totalCredits = 0
         // Ini bisa terjadi jika ada CourseGrade dengan credits = 0
         List<CourseGrade> grades = Arrays.asList(
-                new CourseGrade("CS101", 0, 4.0)
+                new CourseGrade("CS101", 0, 4.0) // EDGE CASE: credits = 0
         );
         double gpa = gradeCalculator.calculateGPA(grades);
         assertEquals(0.0, gpa, 0.001);
@@ -224,21 +228,21 @@ class GradeCalculatorTest {
     @Test
     @DisplayName("Test status ACTIVE untuk semester 1 dengan IPK >= 2.0 (Boundary)")
     void testDetermineAcademicStatus_Semester1_Active_Boundary() {
-        assertEquals("ACTIVE", gradeCalculator.determineAcademicStatus(2.0, 1));
+        assertEquals("ACTIVE", gradeCalculator.determineAcademicStatus(2.0, 1)); // BOUNDARY: 2.0
         assertEquals("ACTIVE", gradeCalculator.determineAcademicStatus(2.5, 2));
     }
 
     @Test
     @DisplayName("Test status PROBATION untuk semester 2 dengan IPK < 2.0 (Boundary)")
     void testDetermineAcademicStatus_Semester2_Probation_Boundary() {
-        assertEquals("PROBATION", gradeCalculator.determineAcademicStatus(1.99, 1));
+        assertEquals("PROBATION", gradeCalculator.determineAcademicStatus(1.99, 1)); // BOUNDARY: 1.99
         assertEquals("PROBATION", gradeCalculator.determineAcademicStatus(1.5, 2));
     }
 
     @Test
     @DisplayName("Test determineAcademicStatus semester 2 dengan IPK boundary 2.0")
     void testDetermineAcademicStatus_Semester2_Boundary_2_0() {
-        assertEquals("ACTIVE", gradeCalculator.determineAcademicStatus(2.0, 2));
+        assertEquals("ACTIVE", gradeCalculator.determineAcademicStatus(2.0, 2)); // EXACT BOUNDARY
     }
 
     // --- Semester 3-4 (IPK >= 2.25 -> ACTIVE, 2.0-2.24 -> PROBATION, < 2.0 -> SUSPENDED) ---
@@ -246,34 +250,34 @@ class GradeCalculatorTest {
     @Test
     @DisplayName("Test status ACTIVE untuk semester 3 dengan IPK >= 2.25 (Boundary)")
     void testDetermineAcademicStatus_Semester3_Active_Boundary() {
-        assertEquals("ACTIVE", gradeCalculator.determineAcademicStatus(2.25, 3));
+        assertEquals("ACTIVE", gradeCalculator.determineAcademicStatus(2.25, 3)); // BOUNDARY: 2.25
         assertEquals("ACTIVE", gradeCalculator.determineAcademicStatus(3.0, 4));
     }
 
     @Test
     @DisplayName("Test status PROBATION untuk semester 4 dengan IPK 2.0 <= GPA < 2.25 (Range Coverage)")
     void testDetermineAcademicStatus_Semester4_Probation_Range() {
-        assertEquals("PROBATION", gradeCalculator.determineAcademicStatus(2.0, 3));
-        assertEquals("PROBATION", gradeCalculator.determineAcademicStatus(2.24, 4));
+        assertEquals("PROBATION", gradeCalculator.determineAcademicStatus(2.0, 3));  // LOWER BOUNDARY
+        assertEquals("PROBATION", gradeCalculator.determineAcademicStatus(2.24, 4)); // UPPER BOUNDARY
     }
 
     @Test
     @DisplayName("Test status PROBATION untuk semester 3 dengan IPK 2.10 (mid-range)")
     void testDetermineAcademicStatus_Semester3_Probation_MidRange() {
-        assertEquals("PROBATION", gradeCalculator.determineAcademicStatus(2.10, 3));
+        assertEquals("PROBATION", gradeCalculator.determineAcademicStatus(2.10, 3)); // MID-RANGE
     }
 
     @Test
     @DisplayName("Test status SUSPENDED untuk semester 3 dengan IPK < 2.0 (Boundary)")
     void testDetermineAcademicStatus_Semester3_Suspended_Boundary() {
-        assertEquals("SUSPENDED", gradeCalculator.determineAcademicStatus(1.99, 3));
+        assertEquals("SUSPENDED", gradeCalculator.determineAcademicStatus(1.99, 3)); // BOUNDARY: 1.99
         assertEquals("SUSPENDED", gradeCalculator.determineAcademicStatus(1.5, 4));
     }
 
     @Test
     @DisplayName("Test determineAcademicStatus semester 4 dengan IPK boundary 2.25")
     void testDetermineAcademicStatus_Semester4_Boundary_2_25() {
-        assertEquals("ACTIVE", gradeCalculator.determineAcademicStatus(2.25, 4));
+        assertEquals("ACTIVE", gradeCalculator.determineAcademicStatus(2.25, 4)); // EXACT BOUNDARY
     }
 
     // --- Semester 5+ (IPK >= 2.5 -> ACTIVE, 2.0-2.49 -> PROBATION, < 2.0 -> SUSPENDED) ---
@@ -281,34 +285,34 @@ class GradeCalculatorTest {
     @Test
     @DisplayName("Test status ACTIVE untuk semester 5+ dengan IPK >= 2.5 (Boundary)")
     void testDetermineAcademicStatus_Semester5Plus_Active_Boundary() {
-        assertEquals("ACTIVE", gradeCalculator.determineAcademicStatus(2.5, 5));
+        assertEquals("ACTIVE", gradeCalculator.determineAcademicStatus(2.5, 5)); // BOUNDARY: 2.5
         assertEquals("ACTIVE", gradeCalculator.determineAcademicStatus(3.5, 8));
     }
 
     @Test
     @DisplayName("Test status PROBATION untuk semester 5+ dengan IPK 2.0 <= GPA < 2.5 (Range Coverage)")
     void testDetermineAcademicStatus_Semester5Plus_Probation_Range() {
-        assertEquals("PROBATION", gradeCalculator.determineAcademicStatus(2.0, 6));
-        assertEquals("PROBATION", gradeCalculator.determineAcademicStatus(2.49, 7));
+        assertEquals("PROBATION", gradeCalculator.determineAcademicStatus(2.0, 6));  // LOWER BOUNDARY
+        assertEquals("PROBATION", gradeCalculator.determineAcademicStatus(2.49, 7)); // UPPER BOUNDARY
     }
 
     @Test
     @DisplayName("Test status PROBATION untuk semester 6 dengan IPK 2.25 (mid-range)")
     void testDetermineAcademicStatus_Semester6_Probation_MidRange() {
-        assertEquals("PROBATION", gradeCalculator.determineAcademicStatus(2.25, 6));
+        assertEquals("PROBATION", gradeCalculator.determineAcademicStatus(2.25, 6)); // MID-RANGE
     }
 
     @Test
     @DisplayName("Test status SUSPENDED untuk semester 5+ dengan IPK < 2.0 (Boundary)")
     void testDetermineAcademicStatus_Semester5Plus_Suspended_Boundary() {
-        assertEquals("SUSPENDED", gradeCalculator.determineAcademicStatus(1.99, 5));
+        assertEquals("SUSPENDED", gradeCalculator.determineAcademicStatus(1.99, 5)); // BOUNDARY: 1.99
         assertEquals("SUSPENDED", gradeCalculator.determineAcademicStatus(1.0, 8));
     }
 
     @Test
     @DisplayName("Test determineAcademicStatus semester 5 dengan IPK boundary 2.5")
     void testDetermineAcademicStatus_Semester5_Boundary_2_5() {
-        assertEquals("ACTIVE", gradeCalculator.determineAcademicStatus(2.5, 5));
+        assertEquals("ACTIVE", gradeCalculator.determineAcademicStatus(2.5, 5)); // EXACT BOUNDARY
     }
 
     @Test
@@ -327,39 +331,43 @@ class GradeCalculatorTest {
         assertEquals("SUSPENDED", gradeCalculator.determineAcademicStatus(1.5, 12));
     }
 
-    // --- Validasi GPA dan Semester ---
+    // ==================== EXCEPTION HANDLING TESTS - ACADEMIC STATUS ====================
 
     @Test
-    @DisplayName("Test determineAcademicStatus dengan GPA 0.0 (valid boundary)")
+    @DisplayName("Test determineAcademicStatus dengan GPA 0.0 (valid boundary - LOWER BOUND)")
     void testDetermineAcademicStatus_GPA_Zero_Valid() {
-        String status = gradeCalculator.determineAcademicStatus(0.0, 1);
+        String status = gradeCalculator.determineAcademicStatus(0.0, 1); // VALID BOUNDARY: 0.0
         assertEquals("PROBATION", status);
     }
 
     @Test
-    @DisplayName("Test determineAcademicStatus dengan GPA 4.0 (valid boundary)")
+    @DisplayName("Test determineAcademicStatus dengan GPA 4.0 (valid boundary - UPPER BOUND)")
     void testDetermineAcademicStatus_GPA_Four_Valid() {
-        String status = gradeCalculator.determineAcademicStatus(4.0, 1);
+        String status = gradeCalculator.determineAcademicStatus(4.0, 1); // VALID BOUNDARY: 4.0
         assertEquals("ACTIVE", status);
     }
 
     @Test
-    @DisplayName("Test determineAcademicStatus harus throw exception jika GPA invalid")
+    @DisplayName("Test determineAcademicStatus harus throw exception jika GPA invalid - BOUNDARY: -0.1 dan 4.1")
     void testDetermineAcademicStatus_InvalidGPA() {
+        // BOUNDARY TEST: -0.1 (just below lower bound)
         assertThrows(IllegalArgumentException.class, () -> {
             gradeCalculator.determineAcademicStatus(-0.1, 1);
         });
+        // BOUNDARY TEST: 4.1 (just above upper bound)
         assertThrows(IllegalArgumentException.class, () -> {
             gradeCalculator.determineAcademicStatus(4.1, 1);
         });
     }
 
     @Test
-    @DisplayName("Test determineAcademicStatus harus throw exception jika semester invalid (< 1)")
+    @DisplayName("Test determineAcademicStatus harus throw exception jika semester invalid (< 1) - BOUNDARY: 0 dan -5")
     void testDetermineAcademicStatus_InvalidSemester() {
+        // BOUNDARY TEST: 0 (just below lower bound)
         assertThrows(IllegalArgumentException.class, () -> {
             gradeCalculator.determineAcademicStatus(3.0, 0);
         });
+        // BOUNDARY TEST: -5 (negative value)
         assertThrows(IllegalArgumentException.class, () -> {
             gradeCalculator.determineAcademicStatus(3.0, -5);
         });
@@ -370,113 +378,117 @@ class GradeCalculatorTest {
     @Test
     @DisplayName("Test batas SKS 24 untuk IPK >= 3.0 (Boundary)")
     void testCalculateMaxCredits_GPA_3_0_Boundary() {
-        assertEquals(24, gradeCalculator.calculateMaxCredits(3.0));
-        assertEquals(24, gradeCalculator.calculateMaxCredits(4.0));
+        assertEquals(24, gradeCalculator.calculateMaxCredits(3.0)); // BOUNDARY: 3.0
+        assertEquals(24, gradeCalculator.calculateMaxCredits(4.0)); // UPPER BOUND
     }
 
     @Test
     @DisplayName("Test batas SKS 21 untuk IPK 2.5-2.99 (Lower Boundary 2.5)")
     void testCalculateMaxCredits_GPA_2_5_Boundary() {
-        assertEquals(21, gradeCalculator.calculateMaxCredits(2.5));
+        assertEquals(21, gradeCalculator.calculateMaxCredits(2.5)); // LOWER BOUNDARY: 2.5
     }
 
     @Test
     @DisplayName("Test batas SKS 21 untuk IPK 2.5-2.99 (Upper Boundary 2.99)")
     void testCalculateMaxCredits_GPA_2_99_Boundary() {
-        assertEquals(21, gradeCalculator.calculateMaxCredits(2.99));
+        assertEquals(21, gradeCalculator.calculateMaxCredits(2.99)); // UPPER BOUNDARY: 2.99
     }
 
     @Test
     @DisplayName("Test calculateMaxCredits dengan GPA 2.75 (mid-range 2.5-2.99)")
     void testCalculateMaxCredits_GPA_MidRange_2_5_to_3() {
-        int credits = gradeCalculator.calculateMaxCredits(2.75);
+        int credits = gradeCalculator.calculateMaxCredits(2.75); // MID-RANGE
         assertEquals(21, credits);
     }
 
     @Test
     @DisplayName("Test batas SKS 18 untuk IPK 2.0-2.49 (Lower Boundary 2.0)")
     void testCalculateMaxCredits_GPA_2_0_Boundary() {
-        assertEquals(18, gradeCalculator.calculateMaxCredits(2.0));
+        assertEquals(18, gradeCalculator.calculateMaxCredits(2.0)); // LOWER BOUNDARY: 2.0
     }
 
     @Test
     @DisplayName("Test batas SKS 18 untuk IPK 2.0-2.49 (Upper Boundary 2.49)")
     void testCalculateMaxCredits_GPA_2_49_Boundary() {
-        assertEquals(18, gradeCalculator.calculateMaxCredits(2.49));
+        assertEquals(18, gradeCalculator.calculateMaxCredits(2.49)); // UPPER BOUNDARY: 2.49
     }
 
     @Test
     @DisplayName("Test calculateMaxCredits dengan GPA 2.25 (mid-range 2.0-2.49)")
     void testCalculateMaxCredits_GPA_MidRange_2_0_to_2_5() {
-        int credits = gradeCalculator.calculateMaxCredits(2.25);
+        int credits = gradeCalculator.calculateMaxCredits(2.25); // MID-RANGE
         assertEquals(18, credits);
     }
 
     @Test
     @DisplayName("Test batas SKS 15 untuk IPK < 2.0 (Upper Boundary 1.99)")
     void testCalculateMaxCredits_GPA_1_99_Boundary() {
-        assertEquals(15, gradeCalculator.calculateMaxCredits(1.99));
+        assertEquals(15, gradeCalculator.calculateMaxCredits(1.99)); // UPPER BOUNDARY: 1.99
     }
 
     @Test
-    @DisplayName("Test batas SKS 15 untuk IPK 0.0 (Worst Case)")
+    @DisplayName("Test batas SKS 15 untuk IPK 0.0 (Worst Case - LOWER BOUND)")
     void testCalculateMaxCredits_GPA_Zero() {
-        assertEquals(15, gradeCalculator.calculateMaxCredits(0.0));
+        assertEquals(15, gradeCalculator.calculateMaxCredits(0.0)); // LOWER BOUND: 0.0
     }
 
     @Test
-    @DisplayName("Test calculateMaxCredits dengan GPA 0.0 (valid boundary)")
+    @DisplayName("Test calculateMaxCredits dengan GPA 0.0 (valid boundary - LOWER BOUND)")
     void testCalculateMaxCredits_GPA_Zero_Valid() {
-        int credits = gradeCalculator.calculateMaxCredits(0.0);
+        int credits = gradeCalculator.calculateMaxCredits(0.0); // VALID BOUNDARY: 0.0
         assertEquals(15, credits);
     }
 
     @Test
-    @DisplayName("Test calculateMaxCredits dengan GPA 4.0 (valid boundary)")
+    @DisplayName("Test calculateMaxCredits dengan GPA 4.0 (valid boundary - UPPER BOUND)")
     void testCalculateMaxCredits_GPA_Four_Valid() {
-        int credits = gradeCalculator.calculateMaxCredits(4.0);
+        int credits = gradeCalculator.calculateMaxCredits(4.0); // VALID BOUNDARY: 4.0
         assertEquals(24, credits);
     }
 
     @Test
     @DisplayName("Test calculateMaxCredits dengan GPA di setiap boundary")
     void testCalculateMaxCredits_AllBoundaries() {
-        assertEquals(15, gradeCalculator.calculateMaxCredits(1.99));
-        assertEquals(18, gradeCalculator.calculateMaxCredits(2.0));
-        assertEquals(18, gradeCalculator.calculateMaxCredits(2.49));
-        assertEquals(21, gradeCalculator.calculateMaxCredits(2.5));
-        assertEquals(21, gradeCalculator.calculateMaxCredits(2.99));
-        assertEquals(24, gradeCalculator.calculateMaxCredits(3.0));
+        assertEquals(15, gradeCalculator.calculateMaxCredits(1.99));  // BOUNDARY: 1.99
+        assertEquals(18, gradeCalculator.calculateMaxCredits(2.0));   // BOUNDARY: 2.0
+        assertEquals(18, gradeCalculator.calculateMaxCredits(2.49));  // BOUNDARY: 2.49
+        assertEquals(21, gradeCalculator.calculateMaxCredits(2.5));   // BOUNDARY: 2.5
+        assertEquals(21, gradeCalculator.calculateMaxCredits(2.99));  // BOUNDARY: 2.99
+        assertEquals(24, gradeCalculator.calculateMaxCredits(3.0));   // BOUNDARY: 3.0
     }
 
     @ParameterizedTest
     @CsvSource({
-            "4.0, 24",
-            "3.5, 24",
-            "3.0, 24",
-            "2.99, 21",
-            "2.75, 21",
-            "2.5, 21",
-            "2.49, 18",
-            "2.25, 18",
-            "2.0, 18",
-            "1.99, 15",
-            "1.5, 15",
-            "0.5, 15",
-            "0.0, 15"
+            "4.0, 24",   // UPPER BOUND
+            "3.5, 24",   // MID-RANGE High
+            "3.0, 24",   // BOUNDARY
+            "2.99, 21",  // BOUNDARY
+            "2.75, 21",  // MID-RANGE
+            "2.5, 21",   // BOUNDARY
+            "2.49, 18",  // BOUNDARY
+            "2.25, 18",  // MID-RANGE
+            "2.0, 18",   // BOUNDARY
+            "1.99, 15",  // BOUNDARY
+            "1.5, 15",   // MID-RANGE Low
+            "0.5, 15",   // LOW VALUE
+            "0.0, 15"    // LOWER BOUND
     })
-    @DisplayName("Test batas SKS untuk berbagai nilai IPK (Comprehensive)")
+    @DisplayName("Test batas SKS untuk berbagai nilai IPK (Comprehensive Boundary Testing)")
     void testGetMaxCredits_VariousGPAs(double gpa, int expectedCredits) {
         int maxCredits = gradeCalculator.calculateMaxCredits(gpa);
         assertEquals(expectedCredits, maxCredits);
     }
 
+    // ==================== EXCEPTION HANDLING TESTS - MAX CREDITS ====================
+
     @Test
-    @DisplayName("Test calculateMaxCredits harus throw exception jika GPA invalid")
+    @DisplayName("Test calculateMaxCredits harus throw exception jika GPA invalid - BOUNDARY: -0.1 dan 4.1")
     void testCalculateMaxCredits_InvalidGPA() {
+        // BOUNDARY TEST: -0.1 (just below lower bound)
         assertThrows(IllegalArgumentException.class, () -> {
             gradeCalculator.calculateMaxCredits(-0.1);
         });
+        // BOUNDARY TEST: 4.1 (just above upper bound)
         assertThrows(IllegalArgumentException.class, () -> {
             gradeCalculator.calculateMaxCredits(4.1);
         });
