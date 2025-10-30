@@ -32,7 +32,7 @@ class GradeCalculatorTest {
     @Test
     @DisplayName("Test menghitung IPK dengan nilai valid")
     void testCalculateGPA_ValidGrades() {
-        // IPK = (12.0 + 9.0 + 8.0) / 8 = 3.625
+        // IPK = (12.0 + 9.0 + 8.0) / 8 = 3.625 dibulatkan jadi 3.63
         List<CourseGrade> grades = Arrays.asList(
                 new CourseGrade("CS101", 3, 4.0),
                 new CourseGrade("CS102", 3, 3.0),
@@ -40,7 +40,7 @@ class GradeCalculatorTest {
         );
 
         double gpa = gradeCalculator.calculateGPA(grades);
-        assertEquals(3.625, gpa, 0.001);
+        assertEquals(3.63, gpa, 0.001);
     }
 
     @Test
@@ -86,7 +86,7 @@ class GradeCalculatorTest {
     @Test
     @DisplayName("Test menghitung IPK dengan kombinasi berbagai nilai")
     void testCalculateGPA_MixedGrades() {
-        // Total: 31.0 / 14 = 2.214...
+        // Total: 31.0 / 14 = 2.214... dibulatkan jadi 2.21
         List<CourseGrade> grades = Arrays.asList(
                 new CourseGrade("CS101", 3, 4.0),
                 new CourseGrade("CS102", 4, 3.0),
@@ -96,20 +96,20 @@ class GradeCalculatorTest {
         );
 
         double gpa = gradeCalculator.calculateGPA(grades);
-        assertEquals(2.214, gpa, 0.01);
+        assertEquals(2.21, gpa, 0.01);
     }
 
     @Test
     @DisplayName("Test menghitung IPK dengan SKS berbeda-beda")
     void testCalculateGPA_DifferentCredits() {
-        // Total: 16.0 / 6 = 2.667
+        // Total: 16.0 / 6 = 2.667 dibulatkan jadi 2.67
         List<CourseGrade> grades = Arrays.asList(
                 new CourseGrade("CS101", 2, 4.0),
                 new CourseGrade("CS102", 4, 2.0)
         );
 
         double gpa = gradeCalculator.calculateGPA(grades);
-        assertEquals(2.667, gpa, 0.01);
+        assertEquals(2.67, gpa, 0.01);
     }
 
     @ParameterizedTest
@@ -189,7 +189,7 @@ class GradeCalculatorTest {
         );
         // (7.5 + 4.5 + 7.0) / 8 = 2.375
         double gpa = gradeCalculator.calculateGPA(grades);
-        assertEquals(2.375, gpa, 0.001);
+        assertEquals(2.38, gpa, 0.001);
     }
 
     @Test
